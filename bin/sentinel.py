@@ -5,7 +5,7 @@ sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '../lib
 import init
 import config
 import misc
-from bitgreend import BitgreenDaemon
+from cspnd import CSPNDaemon
 from models import Superblock, Proposal, GovernanceObject
 from models import VoteSignals, VoteOutcomes, Transient
 import socket
@@ -19,21 +19,21 @@ from scheduler import Scheduler
 import argparse
 
 
-# sync bitgreend gobject list with our local relational DB backend
-def perform_bitgreend_object_sync(bitgreend):
-    GovernanceObject.sync(bitgreend)
+# sync cspnd gobject list with our local relational DB backend
+def perform_cspnd_object_sync(cspnd):
+    GovernanceObject.sync(cspnd)
 
 
-def prune_expired_proposals(bitgreend):
+def prune_expired_proposals(cspnd):
     # vote delete for old proposals
-    for proposal in Proposal.expired(bitgreend.superblockcycle()):
-        proposal.vote(bitgreend, VoteSignals.delete, VoteOutcomes.yes)
+    for proposal in Proposal.expired(cspnd.superblockcycle()):
+        proposal.vote(cspnd, VoteSignals.delete, VoteOutcomes.yes)
 
 
-def attempt_superblock_creation(bitgreend):
-    import bitgreenlib
+def attempt_superblock_creation(cspnd):
+    import cspnlib
 
-    if not bitgreend.is_masternode():
+    if not cspnd.is_masternode():
         print("We are not a Masternode... can't submit superblocks!")
         return
 
@@ -44,7 +44,7 @@ def attempt_superblock_creation(bitgreend):
     # has this masternode voted on *any* superblocks at the given event_block_height?
     # have we voted FUNDING=YES for a superblock for this specific event_block_height?
 
-    event_block_height = bitgreend.next_superblock_height()
+    event_block_height = cspnd.next_superblock_height()
 
     if Superblock.is_voted_funding(event_block_height):
         # printdbg("ALREADY VOTED! 'til next time!")
@@ -52,20 +52,20 @@ def attempt_superblock_creation(bitgreend):
         # vote down any new SBs because we've already chosen a winner
         for sb in Superblock.at_height(event_block_height):
             if not sb.voted_on(signal=VoteSignals.funding):
-                sb.vote(bitgreend, VoteSignals.funding, VoteOutcomes.no)
+                sb.vote(cspnd, VoteSignals.funding, VoteOutcomes.no)
 
         # now return, we're done
         return
 
-    if not bitgreend.is_govobj_maturity_phase():
+    if not cspnd.is_govobj_maturity_phase():
         printdbg("Not in maturity phase yet -- will not attempt Superblock")
         return
 
-    proposals = Proposal.approved_and_ranked(proposal_quorum=bitgreend.governance_quorum(), next_superblock_max_budget=bitgreend.next_superblock_max_budget())
-    budget_max = bitgreend.get_superblock_budget_allocation(event_block_height)
-    sb_epoch_time = bitgreend.block_height_to_epoch(event_block_height)
+    proposals = Proposal.approved_and_ranked(proposal_quorum=cspnd.governance_quorum(), next_superblock_max_budget=cspnd.next_superblock_max_budget())
+    budget_max = cspnd.get_superblock_budget_allocation(event_block_height)
+    sb_epoch_time = cspnd.block_height_to_epoch(event_block_height)
 
-    sb = bitgreenlib.create_superblock(proposals, event_block_height, budget_max, sb_epoch_time)
+    sb = cspnlib.create_superblock(proposals, event_block_height, budget_max, sb_epoch_time)
     if not sb:
         printdbg("No superblock created, sorry. Returning.")
         return
@@ -73,12 +73,12 @@ def attempt_superblock_creation(bitgreend):
     # find the deterministic SB w/highest object_hash in the DB
     dbrec = Superblock.find_highest_deterministic(sb.hex_hash())
     if dbrec:
-        dbrec.vote(bitgreend, VoteSignals.funding, VoteOutcomes.yes)
+        dbrec.vote(cspnd, VoteSignals.funding, VoteOutcomes.yes)
 
         # any other blocks which match the sb_hash are duplicates, delete them
         for sb in Superblock.select().where(Superblock.sb_hash == sb.hex_hash()):
             if not sb.voted_on(signal=VoteSignals.funding):
-                sb.vote(bitgreend, VoteSignals.delete, VoteOutcomes.yes)
+                sb.vote(cspnd, VoteSignals.delete, VoteOutcomes.yes)
 
         printdbg("VOTED FUNDING FOR SB! We're done here 'til next superblock cycle.")
         return
@@ -86,24 +86,24 @@ def attempt_superblock_creation(bitgreend):
         printdbg("The correct superblock wasn't found on the network...")
 
     # if we are the elected masternode...
-    if (bitgreend.we_are_the_winner()):
+    if (cspnd.we_are_the_winner()):
         printdbg("we are the winner! Submit SB to network")
-        sb.submit(bitgreend)
+        sb.submit(cspnd)
 
 
-def check_object_validity(bitgreend):
+def check_object_validity(cspnd):
     # vote (in)valid objects
     for gov_class in [Proposal, Superblock]:
         for obj in gov_class.select():
-            obj.vote_validity(bitgreend)
+            obj.vote_validity(cspnd)
 
 
-def is_bitgreend_port_open(bitgreend):
+def is_cspnd_port_open(cspnd):
     # test socket open before beginning, display instructive message to MN
     # operators if it's not
     port_open = False
     try:
-        info = bitgreend.rpc_command('getgovernanceinfo')
+        info = cspnd.rpc_command('getgovernanceinfo')
         port_open = True
     except (socket.error, JSONRPCException) as e:
         print("%s" % e)
@@ -112,26 +112,26 @@ def is_bitgreend_port_open(bitgreend):
 
 
 def main():
-    bitgreend = BitgreenDaemon.from_bitgreen_conf(config.bitgreen_conf)
+    cspnd = CSPNDaemon.from_cspn_conf(config.cspn_conf)
     options = process_args()
 
     # print version and return if "--version" is an argument
     if options.version:
-        print("Bitgreen Sentinel v%s" % config.sentinel_version)
+        print("CSPN Sentinel v%s" % config.sentinel_version)
         return
 
-    # check bitgreend connectivity
-    if not is_bitgreend_port_open(bitgreend):
-        print("Cannot connect to bitgreend. Please ensure bitgreend is running and the JSONRPC port is open to Sentinel.")
+    # check cspnd connectivity
+    if not is_cspnd_port_open(cspnd):
+        print("Cannot connect to cspnd. Please ensure cspnd is running and the JSONRPC port is open to Sentinel.")
         return
 
-    # check bitgreend sync
-    if not bitgreend.is_synced():
-        print("bitgreend not synced with network! Awaiting full sync before running Sentinel.")
+    # check cspnd sync
+    if not cspnd.is_synced():
+        print("cspnd not synced with network! Awaiting full sync before running Sentinel.")
         return
 
     # ensure valid masternode
-    if not bitgreend.is_masternode():
+    if not cspnd.is_masternode():
         print("Invalid Masternode Status, cannot continue.")
         return
 
@@ -163,16 +163,16 @@ def main():
     # ========================================================================
     #
     # load "gobject list" rpc command data, sync objects into internal database
-    perform_bitgreend_object_sync(bitgreend)
+    perform_cspnd_object_sync(cspnd)
 
     # auto vote network objects as valid/invalid
-    # check_object_validity(bitgreend)
+    # check_object_validity(cspnd)
 
     # vote to delete expired proposals
-    prune_expired_proposals(bitgreend)
+    prune_expired_proposals(cspnd)
 
     # create a Superblock if necessary
-    attempt_superblock_creation(bitgreend)
+    attempt_superblock_creation(cspnd)
 
     # schedule the next run
     Scheduler.schedule_next_run()
@@ -196,7 +196,7 @@ def process_args():
                         dest='bypass')
     parser.add_argument('-v', '--version',
                         action='store_true',
-                        help='Print the version (Bitgreen Sentinel vX.X.X) and exit')
+                        help='Print the version (CSPN Sentinel vX.X.X) and exit')
 
     args = parser.parse_args()
 

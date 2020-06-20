@@ -1,5 +1,5 @@
 """
-bitgreend JSONRPC interface
+cspnd JSONRPC interface
 """
 import time
 from decimal import Decimal
@@ -15,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'lib'))
 
 
-class BitgreenDaemon():
+class CSPNDaemon():
     def __init__(self, **kwargs):
         host = kwargs.get('host', '127.0.0.1')
         user = kwargs.get('user')
@@ -24,7 +24,7 @@ class BitgreenDaemon():
 
         self.creds = (user, password, host, port)
 
-        # memoize calls to some bitgreend methods
+        # memoize calls to some cspnd methods
         self.governance_info = None
         self.gobject_votes = {}
 
@@ -49,10 +49,10 @@ class BitgreenDaemon():
             raise Exception
 
     @classmethod
-    def from_bitgreen_conf(self, bitgreen_dot_conf):
-        from bitgreen_config import BitgreenConfig
-        config_text = BitgreenConfig.slurp_config_file(bitgreen_dot_conf)
-        creds = BitgreenConfig.get_rpc_creds(config_text, config.network)
+    def from_cspn_conf(self, cspn_dot_conf):
+        from cspn_config import CSPNConfig
+        config_text = CSPNConfig.slurp_config_file(cspn_dot_conf)
+        creds = CSPNConfig.get_rpc_creds(config_text, config.network)
 
         creds[u'host'] = config.rpc_host
 
@@ -65,7 +65,7 @@ class BitgreenDaemon():
         return [Masternode(k, v) for (k, v) in mnlist.items()]
 
     def get_current_masternode_vin(self):
-        from bitgreenlib import parse_masternode_status_vin
+        from cspnlib import parse_masternode_status_vin
 
         my_vin = None
 
@@ -142,7 +142,7 @@ class BitgreenDaemon():
     # "my" votes refers to the current running masternode
     # memoized on a per-run, per-object_hash basis
     def get_my_gobject_votes(self, object_hash):
-        import bitgreenlib
+        import cspnlib
         if not self.gobject_votes.get(object_hash):
             my_vin = self.get_current_masternode_vin()
             # if we can't get MN vin from output of `masternode status`,
@@ -154,7 +154,7 @@ class BitgreenDaemon():
 
             cmd = ['gobject', 'getcurrentvotes', object_hash, txid, vout_index]
             raw_votes = self.rpc_command(*cmd)
-            self.gobject_votes[object_hash] = bitgreenlib.parse_raw_votes(
+            self.gobject_votes[object_hash] = cspnlib.parse_raw_votes(
                 raw_votes)
 
         return self.gobject_votes[object_hash]
@@ -179,11 +179,11 @@ class BitgreenDaemon():
         return (current_height >= maturity_phase_start_block)
 
     def we_are_the_winner(self):
-        import bitgreenlib
+        import cspnlib
         # find the elected MN vin for superblock creation...
         current_block_hash = self.current_block_hash()
         mn_list = self.get_masternodes()
-        winner = bitgreenlib.elect_mn(
+        winner = cspnlib.elect_mn(
             block_hash=current_block_hash, mnlist=mn_list)
         my_vin = self.get_current_masternode_vin()
 
@@ -194,7 +194,7 @@ class BitgreenDaemon():
         return (winner == my_vin)
 
     def estimate_block_time(self, height):
-        import bitgreenlib
+        import cspnlib
         """
         Called by block_height_to_epoch if block height is in the future.
         Call `block_height_to_epoch` instead of this method.
@@ -207,7 +207,7 @@ class BitgreenDaemon():
         if (diff < 0):
             raise Exception("Oh Noes.")
 
-        future_seconds = bitgreenlib.blocks_to_seconds(diff)
+        future_seconds = cspnlib.blocks_to_seconds(diff)
         estimated_epoch = int(time.time() + future_seconds)
 
         return estimated_epoch

@@ -1,9 +1,9 @@
 #!/bin/bash
 set -evx
 
-mkdir ~/.bitgreen
+mkdir ~/.cspn
 
 # safety check
-if [ ! -f ~/.bitgreen/.bitgreen.conf ]; then
-  cp share/bitgreen.conf.example ~/.bitgreen/bitgreen.conf
+if [ ! -f ~/.cspn/.cspn.conf ]; then
+  cp share/cspn.conf.example ~/.cspn/cspn.conf
 fi

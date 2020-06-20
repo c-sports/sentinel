@@ -8,30 +8,30 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'lib'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 import config
 
-from bitgreend import BitgreenDaemon
-from bitgreen_config import BitgreenConfig
+from cspnd import CSPNDaemon
+from cspn_config import CSPNConfig
 
 
-def test_bitgreend():
-    config_text = BitgreenConfig.slurp_config_file(config.bitgreen_conf)
+def test_cspnd():
+    config_text = CSPNConfig.slurp_config_file(config.cspn_conf)
     network = 'mainnet'
     chain = 'main'
-    genesis_hash = u'0000025289d6b03cbda4950e825cd865185f34fbb3e098295534b63d78beba15'
+    genesis_hash = u'0000098e30a3d29ee06c8f371e9e1fc516c8218b1be2615b7b0ec31649ed12e3'
     for line in config_text.split("\n"):
         if line.startswith('testnet=1'):
             network = 'testnet'
             chain = 'test'
             genesis_hash = u'00000546a6b03a54ae05f94119e37c55202e90a953058c35364d112d41ded06a'
 
-    creds = BitgreenConfig.get_rpc_creds(config_text, network)
-    bitgreend = BitgreenDaemon(**creds)
-    assert bitgreend.rpc_command is not None
+    creds = CSPNConfig.get_rpc_creds(config_text, network)
+    cspnd = CSPNDaemon(**creds)
+    assert cspnd.rpc_command is not None
 
-    assert hasattr(bitgreend, 'rpc_connection')
+    assert hasattr(cspnd, 'rpc_connection')
 
-    # Bitgreen testnet block 0 hash == 00000546a6b03a54ae05f94119e37c55202e90a953058c35364d112d41ded06a
+    # CSPN testnet block 0 hash == 00000546a6b03a54ae05f94119e37c55202e90a953058c35364d112d41ded06a
     # test commands without arguments
-    info = bitgreend.rpc_command('getblockchaininfo')
+    info = cspnd.rpc_command('getblockchaininfo')
     info_keys = [
         'chain',
         'blocks',
@@ -45,4 +45,4 @@ def test_bitgreend():
     assert info['chain'] is chain
 
     # test commands with args
-    assert bitgreend.rpc_command('getblockhash', 0) == genesis_hash
+    assert cspnd.rpc_command('getblockhash', 0) == genesis_hash

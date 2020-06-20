@@ -1,10 +1,10 @@
-# BitGreen Sentinel
+# CSPN Sentinel
 
-[![Build Status](https://travis-ci.org/bitgreen/sentinel.svg?branch=master)](https://travis-ci.org/bitgreen/sentinel)
+[![Build Status](https://travis-ci.org/cspn/sentinel.svg?branch=master)](https://travis-ci.org/cspn/sentinel)
 
-> An automated governance helper for BitGreen Masternodes.
+> An automated governance helper for CSPN Masternodes.
 
-Sentinel is an autonomous agent for persisting, processing and automating BitGreen governance objects and tasks. It is a Python application which runs alongside the Bitgreen-Core instance on each BitGreen Masternode.
+Sentinel is an autonomous agent for persisting, processing and automating CSPN governance objects and tasks. It is a Python application which runs alongside the CSPN-Core instance on each CSPN Masternode.
 
 ## Table of Contents
 
@@ -32,15 +32,15 @@ Update system packages and ensure virtualenv is installed:
     $ sudo apt-get update
     $ sudo apt-get -y install python-virtualenv
 
-Make sure the local Bitgreen-Core daemon running is at least version 12.1 (120100)
+Make sure the local CSPN-Core daemon running is at least version 12.1 (120100)
 
-    $ bitgreen-cli -getinfo | grep version
+    $ cspn-cli -getinfo | grep version
 
 ### Install Sentinel
 
 Clone the Sentinel repo and install Python dependencies.
 
-    $ git clone https://github.com/bitgreen/sentinel.git && cd sentinel
+    $ git clone https://github.com/cspn/sentinel.git && cd sentinel
     $ virtualenv ./venv
     $ ./venv/bin/pip install -r requirements.txt
 
@@ -64,13 +64,13 @@ Test the config by running tests:
 
     $ ./venv/bin/py.test ./test
 
-With all tests passing and crontab setup, Sentinel will stay in sync with bitgreend and the installation is complete
+With all tests passing and crontab setup, Sentinel will stay in sync with cspnd and the installation is complete
 
 ## Configuration
 
-An alternative (non-default) path to the `bitgreen.conf` file can be specified in `sentinel.conf`:
+An alternative (non-default) path to the `cspn.conf` file can be specified in `sentinel.conf`:
 
-    bitgreen_conf=/path/to/bitgreen.conf
+    cspn_conf=/path/to/cspn.conf
 
 ## Troubleshooting
 
@@ -84,11 +84,11 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
 ## Contributing
 
-Please follow the [Bitgreen-Core guidelines for contributing](https://github.com/bitgreen/bitgreen/blob/master/CONTRIBUTING.md).
+Please follow the [CSPN-Core guidelines for contributing](https://github.com/cspn/cspn/blob/master/CONTRIBUTING.md).
 
 Specifically:
 
-- [Contributor Workflow](https://github.com/bitgreen/bitgreen/blob/master/CONTRIBUTING.md#contributor-workflow)
+- [Contributor Workflow](https://github.com/cspn/cspn/blob/master/CONTRIBUTING.md#contributor-workflow)
 
   To contribute a patch, the workflow is as follows:
 
@@ -102,4 +102,4 @@ Specifically:
 
 ## License
 
-Released under the MIT license, under the same terms as Bitgreen-Core itself. See [LICENSE](LICENSE) for more info.
+Released under the MIT license, under the same terms as CSPN-Core itself. See [LICENSE](LICENSE) for more info.

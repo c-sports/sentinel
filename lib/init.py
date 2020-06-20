@@ -57,23 +57,23 @@ def is_database_correctly_configured():
     return configured
 
 
-def has_bitgreen_conf():
+def has_cspn_conf():
     import config
     import io
 
-    valid_bitgreen_conf = False
+    valid_cspn_conf = False
 
-    # ensure bitgreen_conf exists & readable
+    # ensure cspn_conf exists & readable
     #
-    # if not, print a message stating that Bitgreen Core must be installed and
-    # configured, including JSONRPC access in bitgreen.conf
+    # if not, print a message stating that CSPN Core must be installed and
+    # configured, including JSONRPC access in cspn.conf
     try:
-        f = io.open(config.bitgreen_conf)
-        valid_bitgreen_conf = True
+        f = io.open(config.cspn_conf)
+        valid_cspn_conf = True
     except IOError as e:
         print(e)
 
-    return valid_bitgreen_conf
+    return valid_cspn_conf
 
 
 # === begin main
@@ -95,8 +95,8 @@ def main():
         print("Please ensure correct database configuration.")
         sys.exit(1)
 
-    if not has_bitgreen_conf():
-        print("Bitgreen-Core must be installed and configured, including JSONRPC access in bitgreen.conf")
+    if not has_cspn_conf():
+        print("CSPN-Core must be installed and configured, including JSONRPC access in cspn.conf")
         sys.exit(1)
 
 

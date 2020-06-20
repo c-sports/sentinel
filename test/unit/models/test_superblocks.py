@@ -123,8 +123,8 @@ def superblock():
 
 
 def test_superblock_is_valid(superblock):
-    from bitgreend import BitgreenDaemon
-    bitgreend = BitgreenDaemon.from_bitgreen_conf(config.bitgreen_conf)
+    from cspnd import CSPNDaemon
+    cspnd = CSPNDaemon.from_cspn_conf(config.cspn_conf)
 
     orig = Superblock(**superblock.get_dict())  # make a copy
 
@@ -225,17 +225,17 @@ def test_serialisable_fields():
 
 
 def test_deterministic_superblock_creation(go_list_proposals):
-    import bitgreenlib
+    import cspnlib
     import misc
-    from bitgreend import BitgreenDaemon
-    bitgreend = BitgreenDaemon.from_bitgreen_conf(config.bitgreen_conf)
+    from cspnd import CSPNDaemon
+    cspnd = CSPNDaemon.from_cspn_conf(config.cspn_conf)
     for item in go_list_proposals:
-        (go, subobj) = GovernanceObject.import_gobject_from_bitgreend(bitgreend, item)
+        (go, subobj) = GovernanceObject.import_gobject_from_cspnd(cspnd, item)
 
     max_budget = 60
     prop_list = Proposal.approved_and_ranked(proposal_quorum=1, next_superblock_max_budget=max_budget)
 
-    sb = bitgreenlib.create_superblock(prop_list, 72000, max_budget, misc.now())
+    sb = cspnlib.create_superblock(prop_list, 72000, max_budget, misc.now())
 
     assert sb.event_block_height == 72000
     assert sb.payment_addresses == 'gXcKEE2cr7gXxaupoSU7J2iwjGvGDUtKi7|gXcKEE2cr7gXxaupoSU7J2iwjGvGDUtKi7'
@@ -246,11 +246,11 @@ def test_deterministic_superblock_creation(go_list_proposals):
 
 
 def test_deterministic_superblock_selection(go_list_superblocks):
-    from bitgreend import BitgreenDaemon
-    bitgreend = BitgreenDaemon.from_bitgreen_conf(config.bitgreen_conf)
+    from cspnd import CSPNDaemon
+    cspnd = CSPNDaemon.from_cspn_conf(config.cspn_conf)
 
     for item in go_list_superblocks:
-        (go, subobj) = GovernanceObject.import_gobject_from_bitgreend(bitgreend, item)
+        (go, subobj) = GovernanceObject.import_gobject_from_cspnd(cspnd, item)
 
     # highest hash wins if same -- so just order by hash
     sb = Superblock.find_highest_deterministic('fd01159e60afbf548b126eb1a55055fa46e2531d30ed472a68c8075ac0482aa3')

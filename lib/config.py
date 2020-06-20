@@ -3,29 +3,29 @@
 """
 import sys
 import os
-from bitgreen_config import BitgreenConfig
+from cspn_config import CSPNConfig
 
 default_sentinel_config = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '../sentinel.conf')
 )
 sentinel_config_file = os.environ.get('SENTINEL_CONFIG', default_sentinel_config)
-sentinel_cfg = BitgreenConfig.tokenize(sentinel_config_file)
+sentinel_cfg = CSPNConfig.tokenize(sentinel_config_file)
 sentinel_version = "1.4.0"
 
 
-def get_bitgreen_conf():
+def get_cspn_conf():
     if sys.platform == 'win32':
-        bitgreen_conf = os.path.join(os.getenv('APPDATA'), "BitGreen/bitgreen.conf")
+        cspn_conf = os.path.join(os.getenv('APPDATA'), "CSPN/cspn.conf")
     else:
         home = os.environ.get('HOME')
 
-        bitgreen_conf = os.path.join(home, ".bitgreen/bitgreen.conf")
+        cspn_conf = os.path.join(home, ".cspn/cspn.conf")
         if sys.platform == 'darwin':
-            bitgreen_conf = os.path.join(home, "Library/Application Support/BitGreen/bitgreen.conf")
+            cspn_conf = os.path.join(home, "Library/Application Support/CSPN/cspn.conf")
 
-    bitgreen_conf = sentinel_cfg.get('bitgreen_conf', bitgreen_conf)
+    cspn_conf = sentinel_cfg.get('cspn_conf', cspn_conf)
 
-    return bitgreen_conf
+    return cspn_conf
 
 
 def get_network():
@@ -85,7 +85,7 @@ def get_db_conn():
     return db
 
 
-bitgreen_conf = get_bitgreen_conf()
+cspn_conf = get_cspn_conf()
 network = get_network()
 rpc_host = get_rpchost()
 db = get_db_conn()
