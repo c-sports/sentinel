@@ -146,7 +146,7 @@ class GovernanceObject(BaseModel):
             printdbg("govobj updated = %d" % count)
         subdikt['governance_object'] = govobj
 
-        # get/create, then sync payment amounts, etc. from cspnd - cspnd is the master
+        # get/create, then sync payment amounts, etc. from cspnd - CSPNd is the master
         try:
             newdikt = subdikt.copy()
             newdikt['object_hash'] = object_hash

@@ -1,13 +1,12 @@
 # CSPN Sentinel
 
-[![Build Status](https://travis-ci.org/cspn/sentinel.svg?branch=master)](https://travis-ci.org/cspn/sentinel)
+[![Build Status](https://travis-ci.org/cspnpay/sentinel.svg?branch=master)](https://travis-ci.org/cspnpay/sentinel)
 
 > An automated governance helper for CSPN Masternodes.
 
-Sentinel is an autonomous agent for persisting, processing and automating CSPN governance objects and tasks. It is a Python application which runs alongside the CSPN-Core instance on each CSPN Masternode.
+Sentinel is an autonomous agent for persisting, processing and automating CSPN governance objects and tasks. It is a Python application which runs alongside the CSPNCore instance on each CSPN Masternode.
 
 ## Table of Contents
-
 - [Install](#install)
   - [Dependencies](#dependencies)
 - [Usage](#usage)
@@ -32,15 +31,15 @@ Update system packages and ensure virtualenv is installed:
     $ sudo apt-get update
     $ sudo apt-get -y install python-virtualenv
 
-Make sure the local CSPN-Core daemon running is at least version 12.1 (120100)
+Make sure the local CSPNCore daemon running is at least version 12.1 (120100)
 
-    $ cspn-cli -getinfo | grep version
+    $ cspn-cli getinfo | grep version
 
 ### Install Sentinel
 
 Clone the Sentinel repo and install Python dependencies.
 
-    $ git clone https://github.com/cspn/sentinel.git && cd sentinel
+    $ git clone https://github.com/cspnpay/sentinel.git && cd sentinel
     $ virtualenv ./venv
     $ ./venv/bin/pip install -r requirements.txt
 
@@ -84,22 +83,22 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
 ## Contributing
 
-Please follow the [CSPN-Core guidelines for contributing](https://github.com/cspn/cspn/blob/master/CONTRIBUTING.md).
+Please follow the [CSPNCore guidelines for contributing](https://github.com/cspnpay/cspn/blob/master/CONTRIBUTING.md).
 
 Specifically:
 
-- [Contributor Workflow](https://github.com/cspn/cspn/blob/master/CONTRIBUTING.md#contributor-workflow)
+* [Contributor Workflow](https://github.com/cspnpay/cspn/blob/master/CONTRIBUTING.md#contributor-workflow)
 
-  To contribute a patch, the workflow is as follows:
+    To contribute a patch, the workflow is as follows:
 
-  - Fork repository
-  - Create topic branch
-  - Commit patches
+    * Fork repository
+    * Create topic branch
+    * Commit patches
 
-  In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes or code moves with actual code changes.
+    In general commits should be atomic and diffs should be easy to read. For this reason do not mix any formatting fixes or code moves with actual code changes.
 
-  Commit messages should be verbose by default, consisting of a short subject line (50 chars max), a blank line and detailed explanatory text as separate paragraph(s); unless the title alone is self-explanatory (like "Corrected typo in main.cpp") then a single title line is sufficient. Commit messages should be helpful to people reading your code in the future, so explain the reasoning for your decisions. Further explanation [here](http://chris.beams.io/posts/git-commit/).
+    Commit messages should be verbose by default, consisting of a short subject line (50 chars max), a blank line and detailed explanatory text as separate paragraph(s); unless the title alone is self-explanatory (like "Corrected typo in main.cpp") then a single title line is sufficient. Commit messages should be helpful to people reading your code in the future, so explain the reasoning for your decisions. Further explanation [here](http://chris.beams.io/posts/git-commit/).
 
 ## License
 
-Released under the MIT license, under the same terms as CSPN-Core itself. See [LICENSE](LICENSE) for more info.
+Released under the MIT license, under the same terms as CSPNCore itself. See [LICENSE](LICENSE) for more info.

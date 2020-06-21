@@ -29,7 +29,6 @@ def are_deps_installed():
         import peewee
         import bitcoinrpc.authproxy
         import simplejson
-        import requests
         installed = True
     except ImportError as e:
         print("[error]: Missing dependencies")
@@ -96,7 +95,7 @@ def main():
         sys.exit(1)
 
     if not has_cspn_conf():
-        print("CSPN-Core must be installed and configured, including JSONRPC access in cspn.conf")
+        print("CSPNCore must be installed and configured, including JSONRPC access in cspn.conf")
         sys.exit(1)
 
 
