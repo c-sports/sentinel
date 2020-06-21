@@ -34,7 +34,7 @@ class CSPNConfig():
         creds = {key: value for (key, value) in match}
 
         # standard CSPN defaults...
-        default_port = 13370 if (network == 'mainnet') else 113370
+        default_port = 13371 if (network == 'mainnet') else 113371
 
         # use default port for network if not specified in cspn.conf
         if not ('port' in creds):
